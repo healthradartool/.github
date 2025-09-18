@@ -18,7 +18,7 @@ In terms of styling, please apply the `theme_health_radar()`, `scale_colour_manu
 
 To understand the process a bit better, let's go through an example from the [World Malaria Report](https://jfunction.quarto.pub/healthradar/datasources/malaria/who-wmr/who_wmr.html)
 
-```
+``` r
 # Define the elimination 8 countries
 e8_countries <- c("Botswana", "Eswatini", "Namibia", "South Africa", "Angola", "Mozambique", "Zambia", "Zimbabwe")
 
@@ -51,7 +51,7 @@ The code above has a few key elements. Firstly, notice how the pre-processing st
 
 Let's also take a look at a plot that uses a discrete colour palette:
 
-```
+``` r
 # Create the plot for Deaths with low and high bands
 whowmr::wmr2023$wmr2023f |>
   # Filter for the E8 countries
