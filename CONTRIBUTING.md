@@ -85,7 +85,7 @@ HealthRADAR/
 └── _site/                   # Generated website; do not commit
 ```
 
-Start by looking at nearby files that are similar to the change you want to make. For a complete data source example, see the [CHIRPS page and its supporting files](https://github.com/healthradartool/HealthRADAR/tree/dev/datasources/malaria/chirps).
+Start by looking at nearby files that are similar to the change you want to make. For a complete data source example, see the [World Malaria Report page and its supporting files](https://github.com/healthradartool/HealthRADAR/tree/dev/datasources/malaria/who-wmr).
 
 ## Set up the project
 
