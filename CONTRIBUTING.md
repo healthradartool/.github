@@ -96,7 +96,7 @@ Install:
 - [Git](https://git-scm.com/);
 - [R 4.5.0](https://cran.r-project.org/);
 - [Quarto](https://quarto.org/docs/get-started/); and
-- RStudio, or another editor with R and Quarto support.
+- RStudio or any IDE of your choice.
 
 Pages using spatial R packages may also require system libraries such as `GDAL`, `GEOS`, `PROJ`, and `udunits`.
 
@@ -144,7 +144,7 @@ The project uses `freeze: auto`, so unchanged computational output can be reused
 
 ## Development workflow
 
-Health RADAR uses two long-lived branches:
+Health RADAR uses two primary branches:
 
 - `dev` is the integration branch. Create a feature branch for your work and create a pull request into `dev`.
 - `main` contains the published version of the website. Maintainers promote tested changes from `dev` to `main`.
@@ -184,7 +184,7 @@ Avoid `git add .` when possible. Staging named files makes it easier to keep gen
 git push -u origin feature/<short-description>
 ```
 
-Open a pull request against `healthradartool/HealthRADAR:dev`. Explain what changed, why it is useful, and how you checked it. Link any related issue and include screenshots for visible website changes.
+Create a pull request targeting `dev` in `healthradartool/HealthRADAR`. Explain what changed, why it is useful, and how you checked it. Link any related issue and include screenshots for visible website changes.
 
 For a small text correction, you may edit the file in GitHub and open a pull request without setting up the project locally. Select `dev` as the base branch.
 
