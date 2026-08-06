@@ -1,129 +1,387 @@
 # Contributing to Health RADAR
 
-First of all, thank you for choosing to contribute some of your time to Health RADAR. 
+Thank you for contributing to Health RADAR.
 
-Here are a few guidelines to help you understand the project, learn about the style guide, development best practices and how to contribute.
+This guide is the detailed reference for preparing content, working with the website locally, and submitting a contribution.
+
+## Contents
+
+- [Code of Conduct](#code-of-conduct)
+- [Ways to contribute](#ways-to-contribute)
+- [Before you start](#before-you-start)
+- [How the website is organised](#how-the-website-is-organised)
+- [Set up the project](#set-up-the-project)
+- [Development workflow](#development-workflow)
+- [Contribute a data source page](#contribute-a-data-source-page)
+- [Visualisation guidance](#visualisation-guidance)
+- [R code guidance](#r-code-guidance)
+- [Writing and accessibility](#writing-and-accessibility)
+- [Pull request checklist](#pull-request-checklist)
+- [Getting help](#getting-help)
 
 ## Code of Conduct
 
-This project and everyone participating in it is governed by our [Code of Conduct](https://github.com/healthradartool/.github/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+Health RADAR and everyone participating in it are governed by our [Code of Conduct](https://github.com/healthradartool/.github/blob/main/CODE_OF_CONDUCT.md). By participating, you agree to uphold it.
 
-## Contribution guide
+## Ways to contribute
 
-### Visualisation Guidance
+There are multiple ways to contribute. You can:
 
-In general, the visualisations should highlight the type of data available from a data source. Try to keep to roughly 4 key visualisations that allow visitors to quickly engage with the dataset while learning. They should be as beginner-friendly as possible so that the visualisation and plotting code can ideally both be understood relatively quickly.
+- report a bug or broken link;
+- suggest a new data source;
+- correct or clarify existing content;
+- add a data source page, visualisation, or modelling example; or
+- suggest improvements to the website's code, Quarto configuration, or styling.
 
-In terms of styling, please apply the `theme_health_radar()`, `scale_colour_manual_health_radar()`, `scale_fill_manual_health_radar()`, `scale_colour_continuous_health_radar()` and `scale_fill_continuous_health_radar()` whenever possible. This will ensure consistency in the visualisations across the entire website. 
+### Report an issue
 
-To understand the process a bit better, let's go through an example from the [World Malaria Report](https://jfunction.quarto.pub/healthradar/datasources/malaria/who-wmr/who_wmr.html)
+Search the [existing issues](https://github.com/healthradartool/HealthRADAR/issues) before opening a new one.
 
-``` r
-# Define the elimination 8 countries
-e8_countries <- c("Botswana", "Eswatini", "Namibia", "South Africa", "Angola", "Mozambique", "Zambia", "Zimbabwe")
+For a bug, include:
 
-# Load the map data for Africa
-e8_africa <- ne_countries(continent = "Africa", returnclass = "sf") |>
-  mutate(name = if_else(name == "eSwatini", "Eswatini", name)) |>
-  filter(name %in% e8_countries)
+- the affected page or file;
+- what you expected to happen;
+- what happened instead;
+- steps to reproduce the problem; and
+- a screenshot or error message, when useful.
 
-# Merge the map data with your data
-e8_data <- e8_africa %>%
-  left_join(wmr2023$wmr2023j |> mutate(), by = c("name" = "Country/area"))
+If you are not familiar with GitHub, use the [Health RADAR feedback form](https://healthradartool.net/issues.html).
 
-# Create the choropleth map
-ggplot(data = e8_data) +
-  geom_sf(aes(fill = `2022`), color = "lightgrey", size = 0.3) + # Use fill for the continuous 2022 data
-  theme_health_radar() +
-  scale_fill_continuous_health_radar(name = "Deaths") + # Correct fill scale for continuous data
-  labs(
-    title = "Reported malaria deaths in the Elimination 8 countries (2022)",
-    caption = "A choropleth map of the reported malaria deaths in the Elimination 8 countries in 2022. The map highlights the variation in reported malaria mortality across the E8 countries, with higher mortality rates in Angola, Mozambique, and Zambia. It is important to note that these are reported malaria deaths and may not capture the full extent of malaria mortality in these countries due to underreporting and misclassification of deaths. It would therefore also be useful to consider estimated malaria deaths as well. Source: WMR 2023 Annex 4J",
-    x = "Latitude",
-    y = "Longitude"
-  ) +
-  geom_sf_text(aes(label = name, color = ifelse(`2022` > mean(`2022`), "black", "white")), size = 3) + # Conditional text color
-  scale_color_identity() # Keep scale_color_identity() to use specified colors directly
+### Suggest a data source
+
+Use the [new dataset issue template](https://github.com/healthradartool/HealthRADAR/issues/new?template=new-dataset-template.md). Describe what the data contains, how it is accessed, its spatial and temporal resolution, and why it is useful for climate-sensitive infectious disease modelling.
+
+You may suggest a dataset without providing code. A clear description is enough for another contributor to help build on.
+
+## Before you start
+
+For a new data source, guide, or substantial website change, open an issue before doing extensive work. This gives maintainers an opportunity to confirm the scope, avoid duplicated effort, and identify relevant examples.
+
+Small corrections, such as typos and broken links, can go directly to a pull request.
+
+Keep each contribution focused on one data source, guide, bug, or improvement. Small changes are easier to review and less likely to conflict with other work.
+
+## How the website is organised
+
+Health RADAR is a [Quarto](https://quarto.org/) website. Content is written in `.qmd` files, and most data processing and visualisation examples use R.
+
+The main files and folders are:
+
+```text
+HealthRADAR/
+├── _quarto.yml              # Website configuration
+├── index.qmd                # Home page
+├── data.qmd                 # Data source listing
+├── contribute.qmd           # Short contribution overview
+├── datasources/
+│   ├── malaria/             # Published data source pages
+│   └── drafts/              # Work in progress
+├── guides/                  # Climate, entomology, and modelling guides
+├── theme_health_radar.R     # Plot theme and colour scales
+├── gt_theme_health_radar.R  # Table theme
+├── style-base.scss          # Shared website styling
+├── renv.lock                # R package versions
+├── _freeze/                 # Saved computational output
+└── _site/                   # Generated website; do not commit
 ```
 
+Start by looking at nearby files that are similar to the change you want to make. For a complete data source example, see the [CHIRPS page and its supporting files](https://github.com/healthradartool/HealthRADAR/tree/dev/datasources/malaria/chirps).
 
-The code above has a few key elements. Firstly, notice how the pre-processing steps have been added to give the reader a clearer idea of the necessary transformations required to prepare the dataset for visualisations. You should also add comments to this part to help guide the reader. Secondly is the actual plot, which is created using `ggplot2`. Notice how the theme and continuous fill colours have been applied. Also see that the caption is quite descriptive and that the source has been added at the end. This allows the visualisation to stand on its own if it is copied as-is and reduces the chances of misinterpretation and misuse. It is highly recommended that you follow this blueprint.
+## Set up the project
 
-Let's also take a look at a plot that uses a discrete colour palette:
+### Requirements
 
-``` r
-# Create the plot for Deaths with low and high bands
-whowmr::wmr2023$wmr2023f |>
-  # Filter for the E8 countries
-  filter(`Country/area` |> stringr::str_detect("Angola|Botswana|Eswatini|Malawi|Mozambique|Namibia|South Africa|Zambia|Zimbabwe")) |>
-  # Rename columns to something more readable
-  rename(Country = "Country/area", `Population at risk` = "Population denominator for incidence and mortality rate") |>
-  # Hide the footnotes
-  mutate(Country = Country |> stringr::str_remove("\\d.*$")) |>
-  # Remove the WHO Region column
-  select(!`WHO Region`) |>
-  ggplot(aes(x = Year, y = Cases_Point, group = Country, color = Country)) +
-  geom_line(linewidth = 1) +
-  geom_ribbon(aes(ymin = Cases_Lower, ymax = Cases_Upper, fill = Country), alpha = 0.2) + # Corrected to use 'fill' for the ribbon
-  scale_colour_manual_health_radar() + # Apply manual color scale for 'color' aesthetic (lines)
-  scale_fill_manual_health_radar() + # Apply manual color scale for 'fill' aesthetic (ribbon fill)
-  theme_health_radar() +
-  labs(
-    title = "Estimated Malaria Cases (2000-2022)",
-    subtitle = "With confidence bands",
-    x = "Year",
-    y = "Number of Cases (thousands)",
-    color = "Country",
-    fill = "Country", # Added 'fill' label for the ribbon shading
-    caption = "A plot of the estimated malaria cases in selected countries from 2000 to 2022. The lines represent the estimated number of cases, while the shaded areas represent the confidence bands around the estimates. Notice the variation in malaria cases across countries and over time, with some countries experiencing fluctuations in case numbers. It is important to consider the uncertainty around these estimates when interpreting the data. For example, looking at the plot for Mozambique, the total number of cases did not change much over the years, with the confidence bands staying relatively stable, whereas Angola saw fluctuations in the number of cases, with much wider confidence bands from 2015, indicating greater uncertainty in the estimates. Source: WMR 2023 Annex 4F"
-  )
+Install:
+
+- [Git](https://git-scm.com/);
+- [R 4.5.0](https://cran.r-project.org/);
+- [Quarto](https://quarto.org/docs/get-started/); and
+- RStudio, or another editor with R and Quarto support.
+
+Pages using spatial R packages may also require system libraries such as `GDAL`, `GEOS`, `PROJ`, and `udunits`.
+
+### Fork and clone
+
+Fork [healthradartool/HealthRADAR](https://github.com/healthradartool/HealthRADAR), then clone your fork:
+
+```bash
+git clone https://github.com/<your-username>/HealthRADAR.git
+cd HealthRADAR
+git remote add upstream https://github.com/healthradartool/HealthRADAR.git
 ```
 
+Open `HealthRADAR.Rproj` in RStudio or open the `HealthRADAR` directory in your IDE of choice. The project uses [renv](https://rstudio.github.io/renv/) to keep package versions consistent. Restore the packages recorded in `renv.lock`:
 
-This plot is very similar in terms of general structure to the previous one, but uses the discrete `scale_colour_manual_health_radar()` and `scale_fill_manual_health_radar()` colour palettes for the countries to ensure consistency. There are 20 colours in this palette, which should be more than enough for most visualisations.
+```r
+renv::restore()
+```
 
+The first restore may take some time.
 
-### Code Guidance
+### Preview the website
 
-Get started by forking/cloning the repository from https://github.com/uct-masha/HealthRADAR and opening it as a project in RStudio – we use `renv` to manage the package versions and have decided that `(as at Aug 2024) R 4.4.0` is the version we should support for development. This is the version that the automated builder will use then automatically publishing the tool to https://jfunction.quarto.pub/healthradar/ 
+From the project root, run:
 
-If you intend running any code in the project and have not yet read the documentation for `renv`, you simply must go do so before proceeding. It won't take you too long and working through it is going to save you a lot of time and frustration. The pages are located in their own directory under `datasources/malaria/`
+```bash
+quarto preview
+```
 
-Sometimes there's a need to make a little dataset which will be used in examples on the page. In this case, some way of getting that dataset should be described. We thought it best to describe this in some document which is stored in the Health RADAR repository under, eg, `scripts/access.R.` This could be a script which downloads some large dataset and preprocesses it into something small enough to use in examples. This way, we don't have to pollute the main page with details on exactly how the specific instance of data was accessed but we maintain traceability into such details should the user want to explore this further. This may make more sense in cases such as using [STATcompiler](https://www.statcompiler.com/en) to download DHS survey data since there's a web page you need to work with to actually get a dataset which we still want to make visualisations about (and modelling examples). In this case one could store a short walk through on the steps required to reconstruct the sample dataset used in visualisations on the site.
+The local preview is available at `http://127.0.0.1:4200`.
 
-Where it is sensible to do so, contributions should focus on the malaria in the E8 countries. Preferably they should focus on the four front-line countries (perhaps rotate through these countries in different examples to give an even spread)
+Render the complete website without starting a preview server with:
 
-Examples should not copy/reproduce already existing derivatives of the data but rather demonstrate something interesting and new.
+```bash
+quarto render
+```
 
-When including `R code` in the project:
+You can also render one page while working on it:
 
-- Use `theme_health_radar()` where possible, it's from `theme_health_radar.R`
+```bash
+quarto render datasources/malaria/<dataset>/<dataset>.qmd
+```
 
-When adding visualisations or modelling examples:
+The project uses `freeze: auto`, so unchanged computational output can be reused from `_freeze/`.
 
-- Describe in the text what the visualisation is telling us or what the modelling snippet is telling us
-- Relate the data being described generally on the page to the example
+## Development workflow
 
+Health RADAR uses two long-lived branches:
 
-#### R Code Style
+- `dev` is the integration branch. Create a feature branch for your work and create a pull request into `dev`.
+- `main` contains the published version of the website. Maintainers promote tested changes from `dev` to `main`.
 
-For pipes we try use `|>` not `%>%` though sometimes this isn't possible
+### 1. Update your local `dev` branch
 
-We use [`gt()`](https://gt.rstudio.com)  to make tables.
+```bash
+git checkout dev
+git fetch upstream
+git merge upstream/dev
+```
 
-When processing data:
+### 2. Create a branch
 
-- Pipes should appear at the end of a line and be proceeded by a space
-Filter as early as possible
-- Instead of something like `mutate() |> select()`, use `transmute()`
-- Instead of `select(x) |> as.list()` or similar, consider `pull(x)` which also has a names argument
-- Use `pivot_longer()` and `pivot_wider()` as needed. It is common to use the former before plotting.
-- When coercing to a factor consider using `as_factor()` or `factor(levels=…)`
-- Use indentation to keep track of the flow of your code. For example, if you’ve written `ggplot() +` on one line, the next line should be indented to show that we're still in the “ggplot” context
-- We seldom need to use `group_by()` these days since `summarise()` and friends have a `.by` argument. It was verbose and fussy managing grouped datasets in tidy pipelines before – eg needing to call `ungroup()` or think about using the `.drop` argument in `group_by()`
-- If you aren't sure about something, consult the following in order:
-  - Existing code snippets in Health RADAR
-  - The [tidy style guide](https://style.tidyverse.org)
-  - Another R programmer working on the project – e.g. RM/JN
+Use a short, descriptive name:
 
+```bash
+git checkout -b feature/<short-description>
+```
+
+Examples include `feature/chirps-page`, `feature/climate-guide`, and `fix/broken-data-link`.
+
+### 3. Make and check your changes
+
+Preview as you work. Commit small, logical groups of changes with clear messages:
+
+```bash
+git add <changed-files>
+git commit -m "Add CHIRPS data source page"
+```
+
+Avoid `git add .` when possible. Staging named files makes it easier to keep generated or unrelated files out of the commit.
+
+### 4. Push and open a pull request
+
+```bash
+git push -u origin feature/<short-description>
+```
+
+Open a pull request against `healthradartool/HealthRADAR:dev`. Explain what changed, why it is useful, and how you checked it. Link any related issue and include screenshots for visible website changes.
+
+For a small text correction, you may edit the file in GitHub and open a pull request without setting up the project locally. Select `dev` as the base branch.
+
+## Contribute a data source page
+
+Each published data source has its own folder under `datasources/malaria/`. Draft pages may be developed under `datasources/drafts/`.
+
+### Folder structure
+
+Use a short, lowercase folder name. Hyphens are preferred between words.
+
+```text
+datasources/malaria/<dataset>/
+├── <dataset>.qmd
+├── data/
+│   ├── README.md
+│   └── <small-example-data>
+├── images/
+│   └── <dataset-thumbnail>.png
+└── scripts/                  # Optional access or processing scripts
+```
+
+Do not add full source datasets when a small example or subset is sufficient.
+
+### Page metadata
+
+Each page begins with Quarto YAML metadata. Shared layout settings come from `datasources/malaria/_metadata.yml`.
+
+```yaml
+---
+title: "Dataset name"
+description: "Short description of the dataset"
+date: 07/31/2026
+draft: true
+image: "images/dataset-thumbnail.png"
+
+categories:
+  - climate
+  - gridded
+  - rainfall
+  - global
+  - daily
+---
+```
+
+Use `draft: true` until the page is ready to appear in the data source listing. Choose a small set of categories that accurately describes the dataset.
+
+### Required sections
+
+Data source pages use three main tabs:
+
+```markdown
+::: {.page-tabs .panel-tabset}
+
+## Overview
+
+## Visualisations
+
+## Modelling
+
+:::
+```
+
+#### Overview
+
+Help a reader understand and assess the dataset. Include:
+
+- what the dataset contains and why it was created;
+- the organisation responsible for it;
+- spatial and temporal coverage and resolution;
+- variables and units;
+- update frequency;
+- how to access the data;
+- important caveats, strengths, and limitations;
+- a suggested citation; and
+- licence or terms of use.
+
+Prefer official data pages, documentation, and DOI links.
+
+#### Visualisations
+
+Provide a small set of useful visualisations that show the type and important characteristics of the data. Each visualisation should have a clear title, labelled axes and legend, an informative caption, and a short interpretation in the surrounding text.
+
+#### Modelling
+
+Provide a focused, runnable example showing how the data can support climate-sensitive infectious disease modelling. Explain the purpose of the example, the preparation steps, and what the result means. The aim is to teach a reusable approach rather than present a complete research analysis.
+
+### Data provenance
+
+Every included data file must be reproducible. In `data/README.md`, document:
+
+- the file name and where it is used;
+- the original source and download link;
+- when the data was accessed;
+- filters, subsets, or other processing applied; and
+- any restrictions on access or reuse.
+
+Place repeatable download or processing code in `scripts/` when appropriate. Never commit confidential, personally identifiable, or restricted data.
+
+### ABCDE principles
+
+Every data source should be:
+
+- **Accessible:** users can obtain the data from its source.
+- **Befitting:** the data is appropriate for climate-sensitive infectious disease modelling.
+- **Cited:** citation and attribution information is provided.
+- **Documented:** collection methods and the context needed to interpret the data are explained.
+- **Exemplified:** practical code shows how the data can be used in a model or modelling workflow.
+
+## Visualisation guidance
+
+Visualisations should help a new user quickly understand the dataset. Aim for a few well-chosen plots rather than many similar ones.
+
+When appropriate, focus examples on malaria in the Elimination 8 countries, particularly the frontline countries: Angola, Mozambique, Zambia, and Zimbabwe. Use other locations when they better demonstrate the dataset.
+
+Use the project helpers for a consistent appearance:
+
+```r
+source(here::here("theme_health_radar.R"))
+
+ggplot(data, aes(x, y, colour = group)) +
+  geom_line() +
+  scale_colour_manual_health_radar() +
+  theme_health_radar()
+```
+
+Available helpers include:
+
+- `theme_health_radar()`;
+- `scale_colour_manual_health_radar()`;
+- `scale_fill_manual_health_radar()`;
+- `scale_colour_continuous_health_radar()`; and
+- `scale_fill_continuous_health_radar()`.
+
+Use `gt_theme_health_radar()` for tables created with [`gt`](https://gt.rstudio.com/).
+
+Write captions so that a copied figure retains its meaning. State what is shown, identify the source, and note any uncertainty or limitation that affects interpretation. Add alt text that communicates the figure's purpose and main information.
+
+## R code guidance
+
+Code examples should be readable by someone who is new to the dataset.
+
+- Use the base R pipe `|>` where practical.
+- Use meaningful `snake_case` object names.
+- Put one operation on each line and indent continued expressions.
+- Add comments that explain decisions or unfamiliar transformations.
+- Filter and select data early to keep examples small.
+- Prefer focused verbs such as `transmute()` and `pull()` when they clearly express the task.
+- Use `pivot_longer()` or `pivot_wider()` when reshaping improves clarity.
+- Avoid unnecessary `group_by()` calls when a `.by` argument is clearer.
+- Suppress messages and warnings that do not help the reader.
+- Remove unused packages, objects, and exploratory code before submitting.
+
+Use existing Health RADAR pages as the first reference for style. For questions not covered here, follow the [tidyverse style guide](https://style.tidyverse.org/).
+
+If you introduce an R package, install it through `renv` and update the lockfile:
+
+```r
+renv::install("package-name")
+renv::snapshot()
+```
+
+Only add a dependency when it provides a clear benefit that existing project packages do not.
+
+## Writing and accessibility
+
+- Write in plain English for modellers and analysts who may be new to the dataset.
+- Use British or international spelling, such as *modelling*, *visualisation*, and *colour*.
+- Define abbreviations the first time they appear.
+- Keep paragraphs short and use descriptive headings.
+- Use meaningful link text rather than “click here”.
+- Add captions and alt text to images and plots.
+- Do not use colour alone to communicate meaning.
+- Give tables clear column names and include units where relevant.
+- Cite factual claims and use stable sources where possible.
+
+When editing an existing page, preserve its terminology and structure unless changing them is part of the contribution.
+
+## Pull request checklist
+
+Before opening a pull request, confirm that:
+
+- [ ] the change is focused and any related issue is linked;
+- [ ] the changed page renders without errors;
+- [ ] the complete website is rendered for changes to shared code, configuration, or styling;
+- [ ] links, images, tabs, tables, and code examples work;
+- [ ] figures have useful captions and alt text;
+- [ ] data sources, processing, citations, and terms of use are documented;
+- [ ] no sensitive, restricted, or unnecessarily large files are included;
+- [ ] new R packages are recorded in `renv.lock`;
+- [ ] changed computed output in `_freeze/` is included when needed;
+- [ ] generated `_site/` files are not committed; and
+- [ ] the pull request targets `dev` and explains what changed and how it was checked.
+
+Maintainers may request changes. Push follow-up commits to the same branch; the pull request will update automatically.
+
+## Getting help
+
+If you are unsure how to approach a contribution, [open an issue](https://github.com/healthradartool/HealthRADAR/issues) and describe your idea. Questions and decisions recorded publicly can also help future contributors.
 
