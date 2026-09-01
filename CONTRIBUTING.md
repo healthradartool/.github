@@ -27,11 +27,11 @@ Health RADAR and everyone participating in it are governed by our [Code of Condu
 
 There are multiple ways to contribute. You can:
 
-- report a bug or broken link;
-- suggest a new data source;
-- correct or clarify existing content;
-- add a data source page, visualisation or modelling example; or
-- suggest improvements to the website's code, Quarto configuration or styling.
+- report a bug or broken link
+- suggest a new data source
+- correct or clarify existing content
+- add a data source page, visualisation or modelling example
+- suggest improvements to the website
 
 ### Report an issue
 
@@ -39,11 +39,11 @@ Search the [existing issues](https://github.com/healthradartool/HealthRADAR/issu
 
 For a bug, include:
 
-- the affected page or file;
-- what you expected to happen;
-- what happened instead;
-- steps to reproduce the problem; and
-- a screenshot or error message, when useful.
+- the affected page or file
+- what you expected to happen
+- what happened instead
+- steps to reproduce the problem
+- a screenshot or error message, when useful
 
 If you are not familiar with GitHub, use the [Health RADAR issues form](https://healthradartool.net/issues.html).
 
@@ -137,10 +137,19 @@ quarto render
 You can also render one page while working on it:
 
 ```bash
-quarto render datasources/malaria/<dataset>/<dataset>.qmd
+quarto render datasources/malaria/<datasource>/<datsource>.qmd
 ```
 
 The project uses `freeze: auto`, so unchanged computational output can be reused from `_freeze/`.
+
+If you introduce an R package, install it through `renv` and update the lockfile:
+
+```r
+renv::install("package-name")
+renv::snapshot()
+```
+
+Only add a dependency when it provides a clear benefit that existing project packages do not.
 
 ## Development workflow
 
@@ -184,7 +193,7 @@ Avoid `git add .` when possible. Staging named files makes it easier to keep gen
 git push -u origin feature/<short-description>
 ```
 
-Create a pull request targeting `dev` in `healthradartool/HealthRADAR`. Explain what changed, why it is useful, and how you checked it. Link any related issue and include screenshots for visible website changes.
+Create a pull request targeting `dev` in `healthradartool/HealthRADAR`. Explain what changed, why it is useful and how you checked it. Link any related issue and include screenshots for visible website changes.
 
 For a small text correction, you may edit the file in GitHub and open a pull request without setting up the project locally. Select `dev` as the base branch.
 
@@ -234,7 +243,7 @@ Use `draft: true` until the page is ready to appear in the data source listing. 
 
 ### Available categories
 
-Categories are grouped by theme, geography, temporal resolution, and data type. Choose categories from the lists below rather than inventing new ones, so that filtering and listing pages stay consistent.
+Categories are grouped by theme, geography, temporal resolution and data type. Choose categories from the lists below rather than inventing new ones, so that filtering and listing pages stay consistent.
 
 - **Theme**
   - Climate
@@ -282,7 +291,7 @@ Data source pages are described using three main tabs:
 
 #### Overview
 
-Provides a general high-level description of the data including a description of how to access the access the data.
+Provides a general high-level description of the data including a description of how to access the data.
 
 #### Visualisations
 
@@ -293,16 +302,6 @@ Provide a small set of useful visualisations that show the type and important ch
 Provide a focused working example showing how the data can support climate-sensitive infectious disease modelling. 
 
 You can learn more in the [page checklist.](https://docs.google.com/spreadsheets/d/1b-RO9O2OIzR6sDSqwMNYvVbRSGYm8KP10gLvhNsgiM8/edit?gid=0#gid=0)
-
-
-If you introduce an R package, install it through `renv` and update the lockfile:
-
-```r
-renv::install("package-name")
-renv::snapshot()
-```
-
-Only add a dependency when it provides a clear benefit that existing project packages do not.
 
 When editing an existing page, preserve its terminology and structure unless changing them is part of the contribution.
 
@@ -319,7 +318,7 @@ Before opening a pull request, confirm that:
 - [ ] generated `_site/` files are not committed
 - [ ] the pull request targets `dev` and explains what changed and how it was checked
 
-Maintainers may request changes. Push follow-up commits to the same branch; the pull request will update automatically.
+Maintainers may request changes. Push follow-up commits to the same branch, the pull request will update automatically.
 
 ## Getting help
 
