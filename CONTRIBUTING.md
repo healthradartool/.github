@@ -10,7 +10,7 @@ This guide is the detailed reference for preparing content, working with the web
 - [Ways to contribute](#ways-to-contribute)
 - [Before you start](#before-you-start)
 - [How the website is organised](#how-the-website-is-organised)
-- [Set up the project](#set-up-the-project)
+- [Setting up the project](#set-up-the-project)
 - [Development workflow](#development-workflow)
 - [Contribute a data source page](#contribute-a-data-source-page)
 - [Pull request checklist](#pull-request-checklist)
@@ -137,7 +137,7 @@ You can also render one page while working on it:
 quarto render datasources/malaria/<datasource>/<datsource>.qmd
 ```
 
-The project uses `freeze: auto`, so unchanged computational output can be reused from `_freeze/`.
+The project uses [Quarto's](https://quarto.org/docs/projects/code-execution.html#freeze) `freeze: auto` option to manage execution, so unchanged computational output can be reused from `_freeze/`.
 
 If you introduce an R package, install it through `renv` and update the lockfile:
 
@@ -196,7 +196,7 @@ For a small text correction, you may edit the file in GitHub and open a pull req
 
 ## Contribute a data source page
 
-Each published data source has its own folder under `datasources/malaria/`. Draft pages may be developed under `datasources/drafts/`.
+Each published data source page has its own folder under `datasources/malaria/`. Draft pages may be developed under `datasources/drafts/`.
 
 ### Folder structure
 
@@ -240,7 +240,7 @@ Use `draft: true` until the page is ready to appear in the data source listing. 
 
 ### Available categories
 
-Categories are grouped by theme, geography, temporal resolution and data type. Choose categories from the lists below rather than inventing new ones, so that filtering and listing pages stay consistent.
+Categories are grouped by theme, geography, temporal resolution and data type. Choose categories from the lists below rather than creating new ones, so that filtering and listing pages stay consistent.
 
 - **Theme**
   - Climate
