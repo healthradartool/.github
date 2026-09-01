@@ -13,9 +13,6 @@ This guide is the detailed reference for preparing content, working with the web
 - [Set up the project](#set-up-the-project)
 - [Development workflow](#development-workflow)
 - [Contribute a data source page](#contribute-a-data-source-page)
-- [Visualisation guidance](#visualisation-guidance)
-- [R code guidance](#r-code-guidance)
-- [Writing and accessibility](#writing-and-accessibility)
 - [Pull request checklist](#pull-request-checklist)
 - [Getting help](#getting-help)
 
