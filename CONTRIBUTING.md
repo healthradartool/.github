@@ -298,7 +298,7 @@ Provide a small set of useful visualisations that show the type and important ch
 
 Provide a focused working example showing how the data can support climate-sensitive infectious disease modelling. 
 
-You can learn more in the [page checklist.](https://docs.google.com/spreadsheets/d/1b-RO9O2OIzR6sDSqwMNYvVbRSGYm8KP10gLvhNsgiM8/edit?gid=0#gid=0)
+You can learn more in the [page checklist.](#)
 
 When editing an existing page, preserve its terminology and structure unless changing them is part of the contribution.
 
